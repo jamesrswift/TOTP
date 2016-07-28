@@ -26,14 +26,14 @@ along with this program.If not, see <http://www.gnu.org/licenses/>.
 // Inline function definitions
 //
 
-inline unsigned int max( unsigned int x, unsigned int y) {
+inline size_t max( size_t x, size_t y) {
 	return (x > y ? x : y);
 }
 
 inline std::string xor (std::string left, std::string right) {
 	std::string result = "";
 
-	const unsigned int limit = max(left.length(), right.length());
+	const size_t limit = max(left.length(), right.length());
 	for (size_t i = 0; i < limit; ++i) {
 
 		result += left.at( i%left.length() ) ^ right.at( i%right.length() );
@@ -77,7 +77,7 @@ TOTP::~TOTP() {
 	delete this->config;
 }
 
-std::string TOTP::operator()(){
+std::string TOTP::operator()() {
 	return this->generate( time(nullptr) );
 }
 
@@ -89,7 +89,6 @@ bool TOTP::validate(std::string token) {
 }
 
 std::string TOTP::hmac(std::string key, std::string message) {
-
 	if (key.length() < this->config->blocksize) {
 		key = this->config->hash(key + std::string(this->config->blocksize - key.length(), (char)0x00));
 	}

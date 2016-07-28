@@ -30,9 +30,7 @@ int main()
 	std::cout << std::endl;
 	std::cout << std::endl;
 
-	TOTP MyTokenGenerator(TOTPConf("Hello, World!", 1024, 0, 10, 2, [](std::string message)->std::string{
-		return sha1(message);
-	}));
+	TOTP MyTokenGenerator(TOTPConf("Hello, World!", 1024, 0, 10, 2, [](std::string message)->std::string{ return sha1(message); }));
 
 	std::string token = MyTokenGenerator();
 
