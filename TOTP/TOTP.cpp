@@ -1,7 +1,6 @@
-#include "TOTP.h"
-#include "sha1.h"
 #include <time.h>
-#include <iostream>
+#include "sha1.h"
+#include "TOTP.h"
 
 //
 // Inline function definitions
@@ -28,11 +27,12 @@ inline std::string xor (std::string left, std::string right) {
 // TOTPConf structure definition
 //
 
-TOTPConf::TOTPConf(std::string key, int blocksize, unsigned int epoch, unsigned int interval) {
+TOTPConf::TOTPConf(std::string key, int blocksize, unsigned int epoch, unsigned int interval, unsigned int margin) {
 	this->key = key;
 	this->blocksize = blocksize;
 	this->epoch = epoch;
 	this->interval = interval;
+	this->margin = margin;
 }
 
 TOTPConf::TOTPConf(TOTPConf* config) {
@@ -40,6 +40,7 @@ TOTPConf::TOTPConf(TOTPConf* config) {
 	this->blocksize = config->blocksize;
 	this->epoch = config->epoch;
 	this->interval = config->interval;
+	this->margin = config->margin;
 }
 
 //
@@ -55,8 +56,14 @@ TOTP::~TOTP() {
 }
 
 std::string TOTP::operator()(){
-	double tc = floor((time(nullptr) - this->config->epoch) / this->config->interval);
-	return this->hmac(this->config->key, std::to_string(tc));
+	return this->generate( time(nullptr) );
+}
+
+bool TOTP::validate(std::string token) {
+	double now = time(nullptr);
+	double margin = now - this->config->margin;
+
+	return ( token == this->generate(now) || token == this->generate(margin) );
 }
 
 std::string TOTP::hash(std::string message) {
@@ -77,3 +84,9 @@ std::string TOTP::hmac(std::string key, std::string message) {
 
 	return this->hash(o_key_pad + this->hash(i_key_pad + message));
 }
+
+std::string TOTP::generate(double when) {
+	double tc = floor((when - this->config->epoch) / this->config->interval);
+	return this->hmac(this->config->key, std::to_string(tc));
+}
+
