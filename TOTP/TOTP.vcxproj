@@ -142,11 +142,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="sha1.cpp" />
     <ClCompile Include="TOTP.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="sha1.h" />
     <ClInclude Include="TOTP.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

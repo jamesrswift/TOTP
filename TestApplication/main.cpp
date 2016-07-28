@@ -17,24 +17,23 @@ along with this program.If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../TOTP/TOTP.h"
+#include "sha1.h"
 #include <iostream>
 #include <string>
 #include <Windows.h>
 
-
-void printCopyright() {
+int main()
+{
 	std::cout << "TOTP Copyright (C) 2016, James Rupert Swift" << std::endl;
 	std::cout << "This program comes with ABSOLUTELY NO WARRANTY" << std::endl;
 	std::cout << "This is free software, and you are welcome to redistribute it under certain conditions" << std::endl;
 	std::cout << std::endl;
 	std::cout << std::endl;
-}
 
-int main()
-{
-	printCopyright();
+	TOTP MyTokenGenerator(TOTPConf("Hello, World!", 1024, 0, 10, 2, [](std::string message)->std::string{
+		return sha1(message);
+	}));
 
-	TOTP MyTokenGenerator(TOTPConf("Hello, World!", 1024, 0, 10, 2));
 	std::string token = MyTokenGenerator();
 
 	while (true) {

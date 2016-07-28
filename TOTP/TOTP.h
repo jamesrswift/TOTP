@@ -20,9 +20,12 @@ along with this program.If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 #include <string>
+#include <time.h>
+
+typedef std::string(*hash_function)(std::string);
 
 struct TOTPConf {
-	TOTPConf(std::string key, int blocksize, unsigned int epoch, unsigned int interval, unsigned int margin);
+	TOTPConf(std::string key, int blocksize, unsigned int epoch, unsigned int interval, unsigned int margin, hash_function hasher);
 	TOTPConf(TOTPConf* config);
 
 	std::string key;
@@ -30,6 +33,7 @@ struct TOTPConf {
 	unsigned int epoch;
 	unsigned int interval;
 	unsigned int margin;
+	hash_function hash;
 };
 
 class TOTP {
@@ -42,7 +46,6 @@ public:
 private:
 	TOTPConf* config;
 
-	std::string hash(std::string message);
 	std::string hmac(std::string key, std::string message);
-	std::string generate(double when);
+	std::string generate(time_t when);
 };
