@@ -3,9 +3,9 @@
 #include <time.h>
 #include <iostream>
 
-std::string hash(std::string message) {
-	return sha1(message);
-}
+//
+// Inline function definitions
+//
 
 inline unsigned int max( unsigned int x, unsigned int y) {
 	return (x > y ? x : y);
@@ -17,31 +17,70 @@ inline std::string xor (std::string left, std::string right) {
 	const unsigned int limit = max(left.length(), right.length());
 	for (size_t i = 0; i < limit; ++i) {
 
-		result +=
-			( i > left.length() ? (char) 0x00 : left.at(i) ) ^
-			( i > right.length() ? (char) 0x00 : right.at(i) );
+		result += left.at( i % left.length() ) ^ right.at( i%right.length() );
 
 	}
 
 	return result;
 }
 
-std::string hmac(std::string key, std::string message) {
-	if (key.length() > TOTP_BLOCKSIZE) {
-		key = hash(key);
-	}else if(key.length() < TOTP_BLOCKSIZE) {
-		key = key + std::string(TOTP_BLOCKSIZE - key.length(), (char) 0x00);
-	}
+//
+// TOTPConf structure definition
+//
 
-	std::string o_key_pad = xor(std::string(TOTP_BLOCKSIZE, (char)0x5c), key);
-	std::string i_key_pad = xor(std::string(TOTP_BLOCKSIZE, (char)0x36), key);
-
-	return hash(o_key_pad + hash(i_key_pad + message));
+TOTPConf::TOTPConf(unsigned int blocksize, unsigned int epoch, unsigned int interval) {
+	this->blocksize = blocksize;
+	this->epoch = epoch;
+	this->interval = interval;
 }
 
-std::string TOTP(std::string key) {
-	double tc = floor((time(nullptr) - TOTP_EPOCH) / TOTP_INTERVAL);
-	std::string TOTP_var = hmac(key, std::to_string(tc));
+TOTPConf::TOTPConf(TOTPConf* config) {
+	this->blocksize = config->blocksize;
+	this->epoch = config->epoch;
+	this->interval = config->interval;
+}
 
-	return TOTP_var;
+//
+// TOTP Class definition
+//
+
+TOTP::TOTP() : TOTP(TOTPConf(1024, 0, 30)) {
+	std::cout << "Warning! You are initializing the TOTP class with standard settings!" << std::endl;
+}
+
+TOTP::TOTP(TOTPConf config) {
+	this->config = new TOTPConf(config);
+}
+
+TOTP::~TOTP() {
+	delete this->config;
+}
+
+std::string TOTP::operator()(std::string key){
+	double tc = floor((time(nullptr) - this->config->epoch) / this->config->interval);
+	return this->hmac(key, std::to_string(tc));
+}
+
+std::string TOTP::get(std::string key) {
+	double tc = floor((time(nullptr) - this->config->epoch) / this->config->interval);
+	return this->hmac(key, std::to_string(tc));
+}
+
+std::string TOTP::hash(std::string message) {
+	return sha1(message);
+}
+
+std::string TOTP::hmac(std::string key, std::string message) {
+
+	if (key.length() < this->config->blocksize) {
+		key = this->hash(key + std::string(this->config->blocksize - key.length(), (char)0x00));
+	}
+	else {
+		key = this->hash(key);
+	}
+
+	std::string o_key_pad = xor (std::string(this->config->blocksize, (char)0x5c), key);
+	std::string i_key_pad = xor (std::string(this->config->blocksize, (char)0x36), key);
+
+	return this->hash(o_key_pad + this->hash(i_key_pad + message));
 }

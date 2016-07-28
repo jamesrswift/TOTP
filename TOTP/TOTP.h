@@ -1,10 +1,26 @@
 #pragma once
 #include <string>
 
-#define TOTP_BLOCKSIZE 1024
-#define TOTP_EPOCH 0
-#define TOTP_INTERVAL 30
+struct TOTPConf {
+	TOTPConf(unsigned int blocksize, unsigned int epoch, unsigned int interval);
+	TOTPConf(TOTPConf* config);
 
-std::string hash(std::string message);
-std::string hmac(std::string key, std::string message);
-std::string TOTP(std::string key);
+	unsigned int blocksize;
+	unsigned int epoch;
+	unsigned int interval;
+};
+
+class TOTP {
+public:
+	TOTP();
+	TOTP(TOTPConf config);
+	~TOTP();
+
+	std::string operator()(std::string key);
+	std::string get(std::string key);
+private:
+	TOTPConf* config;
+
+	std::string hash(std::string message);
+	std::string hmac(std::string key, std::string message);
+};
