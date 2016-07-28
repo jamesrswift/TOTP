@@ -6,11 +6,10 @@
 int main()
 {
 
-	std::string SecretKey("Hello, World!");
-	TOTP MyGenerator(TOTPConf(1024, 0, 1));
+	TOTP MyTokenGenerator(TOTPConf("Hello, World!", 1024, 0, 1));
 
 	while (true) {
-		std::cout << MyGenerator.get(SecretKey) << std::endl;
+		std::cout << MyTokenGenerator() << std::endl;
 		Sleep(1000);
 	}
 

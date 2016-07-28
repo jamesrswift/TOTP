@@ -2,9 +2,10 @@
 #include <string>
 
 struct TOTPConf {
-	TOTPConf(unsigned int blocksize, unsigned int epoch, unsigned int interval);
+	TOTPConf(std::string key, int blocksize, unsigned int epoch, unsigned int interval);
 	TOTPConf(TOTPConf* config);
 
+	std::string key;
 	unsigned int blocksize;
 	unsigned int epoch;
 	unsigned int interval;
@@ -12,12 +13,10 @@ struct TOTPConf {
 
 class TOTP {
 public:
-	TOTP();
 	TOTP(TOTPConf config);
 	~TOTP();
 
-	std::string operator()(std::string key);
-	std::string get(std::string key);
+	std::string operator()();
 private:
 	TOTPConf* config;
 

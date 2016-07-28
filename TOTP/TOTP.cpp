@@ -17,7 +17,7 @@ inline std::string xor (std::string left, std::string right) {
 	const unsigned int limit = max(left.length(), right.length());
 	for (size_t i = 0; i < limit; ++i) {
 
-		result += left.at( i % left.length() ) ^ right.at( i%right.length() );
+		result += left.at( i%left.length() ) ^ right.at( i%right.length() );
 
 	}
 
@@ -28,13 +28,15 @@ inline std::string xor (std::string left, std::string right) {
 // TOTPConf structure definition
 //
 
-TOTPConf::TOTPConf(unsigned int blocksize, unsigned int epoch, unsigned int interval) {
+TOTPConf::TOTPConf(std::string key, int blocksize, unsigned int epoch, unsigned int interval) {
+	this->key = key;
 	this->blocksize = blocksize;
 	this->epoch = epoch;
 	this->interval = interval;
 }
 
 TOTPConf::TOTPConf(TOTPConf* config) {
+	this->key = config->key;
 	this->blocksize = config->blocksize;
 	this->epoch = config->epoch;
 	this->interval = config->interval;
@@ -44,10 +46,6 @@ TOTPConf::TOTPConf(TOTPConf* config) {
 // TOTP Class definition
 //
 
-TOTP::TOTP() : TOTP(TOTPConf(1024, 0, 30)) {
-	std::cout << "Warning! You are initializing the TOTP class with standard settings!" << std::endl;
-}
-
 TOTP::TOTP(TOTPConf config) {
 	this->config = new TOTPConf(config);
 }
@@ -56,14 +54,9 @@ TOTP::~TOTP() {
 	delete this->config;
 }
 
-std::string TOTP::operator()(std::string key){
+std::string TOTP::operator()(){
 	double tc = floor((time(nullptr) - this->config->epoch) / this->config->interval);
-	return this->hmac(key, std::to_string(tc));
-}
-
-std::string TOTP::get(std::string key) {
-	double tc = floor((time(nullptr) - this->config->epoch) / this->config->interval);
-	return this->hmac(key, std::to_string(tc));
+	return this->hmac(this->config->key, std::to_string(tc));
 }
 
 std::string TOTP::hash(std::string message) {
