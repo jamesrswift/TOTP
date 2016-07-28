@@ -3,7 +3,7 @@ Time-based one time password generator
 
 This repository stores a library designed to generate time-based one-time-passwords, following as closely as possible the industry standard. This library allows you to specify the private key used, how often the tokens should change, the margin of error when validating tokens, among other options.
 
-### Example usage
+## Example usage
 
 ```cpp
 TOTP MyTokenGenerator(TOTPConf("Hello, World!", 1024, 0, 10, 2));
@@ -14,7 +14,7 @@ std::cout << "Is token valid? " << (MyTokenGenerator.validate(token)) << std::en
 
 An example console application can be found in the repository.
 
-### Configuration Explained
+## Configuration Explained
 
 ```cpp
 auto MyConfig = TOTPConf(
@@ -26,10 +26,10 @@ auto MyConfig = TOTPConf(
 );
 ```
 
-### History
+## History
 
 * Version 0.0.1 - Initial release.
 
-### Planned features
+## Planned features
 
 * Allow the hashing algorithm to be specified in the configuration structure.
