@@ -6,7 +6,8 @@ This repository stores a library designed to generate time-based one-time-passwo
 ## Example usage
 
 ```cpp
-TOTP MyTokenGenerator(TOTPConf("Hello, World!", 1024, 0, 10, 2, [](std::string message)->std::string{ return sha1(message); }));
+using namespace TOTP_Library;
+TOTP MyTokenGenerator(TOTPConf("Hello, World!", sha1));
 
 std::string token = MyTokenGenerator();
 std::cout << "Is token valid? " << (MyTokenGenerator.validate(token)) << std::endl;
@@ -23,11 +24,12 @@ auto MyConfig = TOTPConf(
     0,                                                            // start of epoch, seconds since unix epoch when first time slot starts
     10,                                                           // interval between new time slots, this is the interval between new tokens
     2,                                                            // margin of error when validation tokens, in seconds.
-    [](std::string message)->std::string{ return sha1(message); } // hashing algorithm to be used
+    sha1                                                          // hashing algorithm to be used, function of type TOTP_Library::hasher_function
 );
 ```
 
 ## History
 
+* Version 1.0.0 - Official release, code quality increased.
 * Version 0.0.2 - Custom hashing algorithms may now by used
 * Version 0.0.1 - Initial release.

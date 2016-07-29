@@ -22,30 +22,39 @@ along with this program.If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <time.h>
 
-typedef std::string(*hash_function)(std::string);
+namespace TOTP_Library {
 
-struct TOTPConf {
-	TOTPConf(std::string key, int blocksize, unsigned int epoch, unsigned int interval, unsigned int margin, hash_function hasher);
-	TOTPConf(TOTPConf* config);
+	typedef std::string(*hash_function)(const std::string&);
 
-	std::string key;
-	unsigned int blocksize;
-	unsigned int epoch;
-	unsigned int interval;
-	unsigned int margin;
-	hash_function hash;
-};
+	struct TOTPConf {
+		TOTPConf(std::string key, int blocksize, unsigned int epoch, 
+			unsigned int interval, unsigned int margin, hash_function hasher);
+		TOTPConf(std::string key, hash_function hasher);
+		TOTPConf(TOTPConf* config);
 
-class TOTP {
-public:
-	TOTP(TOTPConf config);
-	~TOTP();
+		std::string key;
+		unsigned int blocksize;
+		unsigned int epoch;
+		unsigned int interval;
+		unsigned int margin;
+		hash_function hash;
+	};
 
-	std::string operator()();
-	bool validate(std::string token);
-private:
-	TOTPConf* config;
 
-	std::string hmac(std::string key, std::string message);
-	std::string generate(time_t when);
-};
+	class TOTP {
+
+	public:
+		TOTP(TOTPConf config);
+		~TOTP();
+
+		std::string operator()();
+		bool validate(std::string token);
+		double getTimeCounter(time_t when);
+	private:
+		TOTPConf* config;
+
+		std::string hmac(std::string key, std::string message);
+		std::string generate(time_t when);
+	};
+
+}

@@ -13,18 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="SHA1">
+      <UniqueIdentifier>{53958c2f-ba0f-4ce6-9a96-6c4171c7eadb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sha1.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="sha1\sha1.cpp">
+      <Filter>SHA1</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="sha1.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="sha1\sha1.h">
+      <Filter>SHA1</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -16,11 +16,13 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../TOTP/TOTP.h"
-#include "sha1.h"
+#include "TOTP.h"
+#include "sha1/sha1.h"
 #include <iostream>
 #include <string>
 #include <Windows.h>
+
+using namespace TOTP_Library;
 
 int main()
 {
@@ -30,7 +32,7 @@ int main()
 	std::cout << std::endl;
 	std::cout << std::endl;
 
-	TOTP MyTokenGenerator(TOTPConf("Hello, World!", 1024, 0, 10, 2, [](std::string message)->std::string{ return sha1(message); }));
+	TOTP MyTokenGenerator(TOTPConf("Hello, World!", sha1));
 
 	std::string token = MyTokenGenerator();
 
