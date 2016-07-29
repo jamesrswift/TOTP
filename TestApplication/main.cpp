@@ -24,6 +24,13 @@ along with this program.If not, see <http://www.gnu.org/licenses/>.
 
 using namespace TOTP_Library;
 
+struct TOTPConf_sha1 : public TOTPConf {
+	TOTPConf_sha1(std::string key) : TOTPConf(key, sha1) {
+		setPadding(0x11, 0x55);
+		blocksize = 64;
+	}
+};
+
 int main()
 {
 	std::cout << "TOTP Copyright (C) 2016, James Rupert Swift" << std::endl;
@@ -32,8 +39,7 @@ int main()
 	std::cout << std::endl;
 	std::cout << std::endl;
 
-	TOTP MyTokenGenerator(TOTPConf("Hello, World!", sha1));
-
+	TOTP MyTokenGenerator(TOTPConf_sha1("This is my secret key"));
 	std::string token = MyTokenGenerator();
 
 	while (true) {

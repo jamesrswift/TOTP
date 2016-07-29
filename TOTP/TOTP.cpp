@@ -18,6 +18,8 @@ along with this program.If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+#define TOTP_EXPORTS
+
 #include <string>
 #include <time.h>
 #include "TOTP.h"
@@ -26,11 +28,13 @@ along with this program.If not, see <http://www.gnu.org/licenses/>.
 // Inline function definitions
 //
 
-inline size_t max( size_t x, size_t y) {
+inline size_t max( size_t x, size_t y)
+{
 	return (x > y ? x : y);
 }
 
-inline std::string xor (std::string left, std::string right) {
+inline std::string xor (std::string left, std::string right)
+{
 	std::string result = "";
 
 	const size_t limit = max(left.length(), right.length());
@@ -44,32 +48,34 @@ inline std::string xor (std::string left, std::string right) {
 }
 
 
-namespace TOTP_Library {
+namespace TOTP_Library
+{
 
 	//
 	// TOTPConf structure definition
 	//
 
-	TOTPConf::TOTPConf(std::string key, int blocksize, unsigned int epoch, 
-			unsigned int interval, unsigned int margin, hash_function hasher) {
-		this->key = key;
-		this->blocksize = blocksize;
-		this->epoch = epoch;
-		this->interval = interval;
-		this->margin = margin;
-		this->hash = hasher;
+	TOTPConf::TOTPConf(std::string key, int blocksize, unsigned int epoch,
+		unsigned int interval, unsigned int margin, hash_function hasher) :
+		key(key),
+		blocksize(blocksize),
+		epoch(epoch),
+		interval(interval),
+		margin(margin),
+		hash(hasher)
+	{
+
 	}
 
-	TOTPConf::TOTPConf(std::string key, hash_function hasher) {
-		this->key = key;
-		this->blocksize = 1024;
-		this->epoch = 0;
-		this->interval = 30;
-		this->margin = 2;
-		this->hash = hasher;
+	TOTPConf::TOTPConf(std::string key, hash_function hasher):
+		key(key),
+		hash(hasher)
+	{
+
 	}
 
-	TOTPConf::TOTPConf(TOTPConf* config) {
+	TOTPConf::TOTPConf(TOTPConf* config)
+	{
 		this->key = config->key;
 		this->blocksize = config->blocksize;
 		this->epoch = config->epoch;
@@ -78,24 +84,38 @@ namespace TOTP_Library {
 		this->hash = config->hash;
 	}
 
+	void TOTPConf::setPadding( char o_pad, char i_pad )
+	{
+		if (o_pad != (char)nullptr) {
+			this->o_pad = o_pad;
+		}
+		if (i_pad != (char)nullptr) {
+			this->i_pad = i_pad;
+		}
+	}
+
 
 	//
 	// TOTP Class definition
 	//
 
-	TOTP::TOTP(TOTPConf config) {
+	TOTP::TOTP(TOTPConf config)
+	{
 		this->config = new TOTPConf(config);
 	}
 
-	TOTP::~TOTP() {
+	TOTP::~TOTP()
+	{
 		delete this->config;
 	}
 
-	std::string TOTP::operator()() {
+	std::string TOTP::operator()()
+	{
 		return this->generate(time(nullptr));
 	}
 
-	bool TOTP::validate(std::string token) {
+	bool TOTP::validate(std::string token)
+	{
 		time_t now = time(nullptr);
 		time_t margin = now - this->config->margin;
 
@@ -103,11 +123,13 @@ namespace TOTP_Library {
 			token == this->generate(margin));
 	}
 
-	double TOTP::getTimeCounter(time_t when) {
+	double TOTP::getTimeCounter(time_t when)
+	{
 		return floor((when - this->config->epoch) / this->config->interval);
 	}
 
-	std::string TOTP::hmac(std::string key, std::string message) {
+	std::string TOTP::hmac(std::string key, std::string message)
+	{
 		if (key.length() < this->config->blocksize) {
 			key = this->config->hash(key + std::string(
 					this->config->blocksize - key.length(), (char)0x00));
@@ -125,7 +147,8 @@ namespace TOTP_Library {
 			message));
 	}
 
-	std::string TOTP::generate(time_t when) {
+	std::string TOTP::generate(time_t when)
+	{
 		return this->hmac(this->config->key, std::to_string(
 			this->getTimeCounter(when)));
 	}

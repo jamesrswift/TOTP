@@ -22,26 +22,36 @@ along with this program.If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <time.h>
 
-namespace TOTP_Library {
+namespace TOTP_Library
+{
 
 	typedef std::string(*hash_function)(const std::string&);
 
-	struct TOTPConf {
-		TOTPConf(std::string key, int blocksize, unsigned int epoch, 
+	struct TOTPConf
+	{
+		TOTPConf(std::string key, int blocksize, unsigned int epoch,
 			unsigned int interval, unsigned int margin, hash_function hasher);
 		TOTPConf(std::string key, hash_function hasher);
 		TOTPConf(TOTPConf* config);
 
+		void setPadding(char o_pad = (char)nullptr, char i_pad = (char)nullptr);
+
 		std::string key;
-		unsigned int blocksize;
-		unsigned int epoch;
-		unsigned int interval;
-		unsigned int margin;
+
+		char o_pad = 0x5c;
+		char i_pad = 0x36;
+
+		unsigned int blocksize = 64;
+		unsigned int epoch = 0;
+		unsigned int interval = 30;
+		unsigned int margin = 2;
+
 		hash_function hash;
 	};
 
 
-	class TOTP {
+	class TOTP
+	{
 
 	public:
 		TOTP(TOTPConf config);
